@@ -24,6 +24,7 @@ import EditRedemption from './pages/Redemption/EditRedemption';
 import TopUp from './pages/TopUp';
 import Log from './pages/Log';
 import Chat from './pages/Chat';
+import Midjourney from "./pages/Midjourney";
 
 const Home = lazy(() => import('./pages/Home'));
 const About = lazy(() => import('./pages/About'));
@@ -54,6 +55,11 @@ function App() {
         localStorage.setItem('chat_link', data.chat_link);
       } else {
         localStorage.removeItem('chat_link');
+      }
+      if (data.mj_link) {
+          localStorage.setItem('mj_link', data.mj_link);
+      } else {
+          localStorage.removeItem('mj_link');
       }
       if (
         data.version !== process.env.REACT_APP_VERSION &&
@@ -265,6 +271,14 @@ function App() {
           <PrivateRoute>
             <Log />
           </PrivateRoute>
+        }
+      />
+      <Route
+        path='/midjourney'
+        element={
+            <PrivateRoute>
+                <Midjourney/>
+            </PrivateRoute>
         }
       />
       <Route

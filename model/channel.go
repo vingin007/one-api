@@ -26,6 +26,12 @@ type Channel struct {
 	Priority           *int64  `json:"priority" gorm:"bigint;default:0"`
 }
 
+func FindChannelByStatusAndModels(status int, models string) ([]*Channel, error) {
+	var channels []*Channel
+	err := DB.Where("status = ? AND models = ?", status, models).Find(&channels).Error
+	return channels, err
+}
+
 func GetAllChannels(startIdx int, num int, selectAll bool) ([]*Channel, error) {
 	var channels []*Channel
 	var err error

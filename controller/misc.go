@@ -31,8 +31,12 @@ func GetStatus(c *gin.Context) {
 			"turnstile_site_key":  common.TurnstileSiteKey,
 			"top_up_link":         common.TopUpLink,
 			"chat_link":           common.ChatLink,
+			"mj_link":             common.MjLink,
 			"quota_per_unit":      common.QuotaPerUnit,
 			"display_in_currency": common.DisplayInCurrencyEnabled,
+			"normal_price":        common.NormalPrice,
+			"stable_price":        common.StablePrice,
+			"base_price":          common.BasePrice,
 		},
 	})
 	return
@@ -199,6 +203,16 @@ func ResetPassword(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    password,
+	})
+	return
+}
+func GetMidjourney(c *gin.Context) {
+	common.OptionMapRWMutex.RLock()
+	defer common.OptionMapRWMutex.RUnlock()
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data":    common.OptionMap["Midjourney"],
 	})
 	return
 }

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"one-api/common"
 	"strconv"
@@ -25,6 +26,10 @@ const (
 	RelayModeImagesGenerations
 	RelayModeEdits
 	RelayModeAudio
+	RelayModeMidjourneyImagine
+	RelayModeMidjourneyChange
+	RelayModeMidjourneyNotify
+	RelayModeMidjourneyTaskFetch
 )
 
 // https://platform.openai.com/docs/api-reference/chat
@@ -166,6 +171,22 @@ type CompletionsStreamResponse struct {
 		FinishReason string `json:"finish_reason"`
 	} `json:"choices"`
 }
+type MidjourneyRequest struct {
+	Prompt      string   `json:"prompt"`
+	NotifyHook  string   `json:"notifyHook"`
+	Action      string   `json:"action"`
+	Index       int      `json:"index"`
+	State       string   `json:"state"`
+	TaskId      string   `json:"taskId"`
+	Base64Array []string `json:"base64Array"`
+}
+
+type MidjourneyResponse struct {
+	Code        int         `json:"code"`
+	Description string      `json:"description"`
+	Properties  interface{} `json:"properties"`
+	Result      string      `json:"result"`
+}
 
 func Relay(c *gin.Context) {
 	relayMode := RelayModeUnknown
@@ -246,4 +267,51 @@ func RelayNotFound(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{
 		"error": err,
 	})
+}
+func RelayMidjourney(c *gin.Context) {
+	relayMode := RelayModeUnknown
+	if strings.HasPrefix(c.Request.URL.Path, "/mj/submit/imagine") {
+		relayMode = RelayModeMidjourneyImagine
+	} else if strings.HasPrefix(c.Request.URL.Path, "/mj/notify") {
+		relayMode = RelayModeMidjourneyNotify
+	} else if strings.HasPrefix(c.Request.URL.Path, "/mj/submit/change") {
+		relayMode = RelayModeMidjourneyChange
+	} else if strings.HasPrefix(c.Request.URL.Path, "/mj/task") {
+		relayMode = RelayModeMidjourneyTaskFetch
+	}
+	var err *MidjourneyResponse
+	switch relayMode {
+	case RelayModeMidjourneyNotify:
+		err = relayMidjourneyNotify(c)
+	case RelayModeMidjourneyTaskFetch:
+		err = relayMidjourneyTask(c, relayMode)
+	default:
+		err = relayMidjourneySubmit(c, relayMode)
+	}
+	//err = relayMidjourneySubmit(c, relayMode)
+	log.Println(err)
+	if err != nil {
+		retryTimesStr := c.Query("retry")
+		retryTimes, _ := strconv.Atoi(retryTimesStr)
+		if retryTimesStr == "" {
+			retryTimes = common.RetryTimes
+		}
+		if retryTimes > 0 {
+			c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s?retry=%d", c.Request.URL.Path, retryTimes-1))
+		} else {
+			if err.Code == 30 {
+				err.Result = "当前分组负载已饱和，请稍后再试，或升级账户以提升服务质量。"
+			}
+			c.JSON(400, gin.H{
+				"error": err.Result,
+			})
+		}
+		channelId := c.GetInt("channel_id")
+		common.SysError(fmt.Sprintf("relay error (channel #%d): %s", channelId, err.Result))
+		//if shouldDisableChannel(&err.OpenAIError) {
+		//	channelId := c.GetInt("channel_id")
+		//	channelName := c.GetString("channel_name")
+		//	disableChannel(channelId, channelName, err.Result)
+		//}
+	}
 }

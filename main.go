@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"one-api/common"
 	"one-api/controller"
 	"one-api/middleware"
@@ -22,6 +23,10 @@ var buildFS embed.FS
 var indexPage []byte
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		common.FatalLog("file not find:" + err.Error())
+	}
 	common.SetupLogger()
 	common.SysLog("One API " + common.Version + " started")
 	if os.Getenv("GIN_MODE") != "debug" {
@@ -31,7 +36,7 @@ func main() {
 		common.SysLog("running in debug mode")
 	}
 	// Initialize SQL Database
-	err := model.InitDB()
+	err = model.InitDB()
 	if err != nil {
 		common.FatalLog("failed to initialize database: " + err.Error())
 	}
@@ -77,6 +82,7 @@ func main() {
 		}
 		go controller.AutomaticallyTestChannels(frequency)
 	}
+	go controller.UpdateMidjourneyTask()
 	if os.Getenv("BATCH_UPDATE_ENABLED") == "true" {
 		common.BatchUpdateEnabled = true
 		common.SysLog("batch update enabled with interval " + strconv.Itoa(common.BatchUpdateInterval) + "s")

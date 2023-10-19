@@ -99,6 +99,22 @@ func SearchUserLogs(c *gin.Context) {
 	})
 	return
 }
+func GetLogByKey(c *gin.Context) {
+	key := c.Query("key")
+	logs, err := model.GetLogByKey(key)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+		"message": "",
+		"data":    logs,
+	})
+}
 
 func GetLogsStat(c *gin.Context) {
 	logType, _ := strconv.Atoi(c.Query("type"))

@@ -41,7 +41,12 @@ func Distribute() func(c *gin.Context) {
 			// Select a channel for the user
 			var modelRequest ModelRequest
 			var err error
-			if !strings.HasPrefix(c.Request.URL.Path, "/v1/audio") {
+			if strings.HasPrefix(c.Request.URL.Path, "/mj") {
+				// Midjourney
+				if modelRequest.Model == "" {
+					modelRequest.Model = "midjourney"
+				}
+			} else if !strings.HasPrefix(c.Request.URL.Path, "/v1/audio") {
 				err = common.UnmarshalBodyReusable(c, &modelRequest)
 			}
 			if err != nil {

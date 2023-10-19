@@ -12,11 +12,12 @@ import (
 var StartTime = time.Now().Unix() // unit: second
 var Version = "v0.0.0"            // this hard coding will be replaced automatically when building, no need to manually change
 var SystemName = "One API"
-var ServerAddress = "http://localhost:3000"
+var ServerAddress = "http://localhost:3333"
 var Footer = ""
 var Logo = ""
 var TopUpLink = ""
 var ChatLink = ""
+var MjLink = ""
 var QuotaPerUnit = 500 * 1000.0 // $0.002 / 1K tokens
 var DisplayInCurrencyEnabled = true
 var DisplayTokenStatEnabled = true
@@ -94,6 +95,10 @@ var requestInterval, _ = strconv.Atoi(os.Getenv("POLLING_INTERVAL"))
 var RequestInterval = time.Duration(requestInterval) * time.Second
 
 var SyncFrequency = GetOrDefault("SYNC_FREQUENCY", 10*60) // unit is second
+
+var NormalPrice = 1.5
+var StablePrice = 6.0
+var BasePrice = 1.5
 
 var BatchUpdateEnabled = false
 var BatchUpdateInterval = GetOrDefault("BATCH_UPDATE_INTERVAL", 5)

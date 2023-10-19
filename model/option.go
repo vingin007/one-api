@@ -69,8 +69,12 @@ func InitOptionMap() {
 	common.OptionMap["GroupRatio"] = common.GroupRatio2JSONString()
 	common.OptionMap["TopUpLink"] = common.TopUpLink
 	common.OptionMap["ChatLink"] = common.ChatLink
+	common.OptionMap["MjLink"] = common.MjLink
 	common.OptionMap["QuotaPerUnit"] = strconv.FormatFloat(common.QuotaPerUnit, 'f', -1, 64)
 	common.OptionMap["RetryTimes"] = strconv.Itoa(common.RetryTimes)
+	common.OptionMap["NormalPrice"] = strconv.FormatFloat(common.NormalPrice, 'f', -1, 64)
+	common.OptionMap["StablePrice"] = strconv.FormatFloat(common.StablePrice, 'f', -1, 64)
+	common.OptionMap["BasePrice"] = strconv.FormatFloat(common.BasePrice, 'f', -1, 64)
 	common.OptionMapRWMutex.Unlock()
 	loadOptionsFromDatabase()
 }
@@ -213,6 +217,14 @@ func updateOptionMap(key string, value string) (err error) {
 		common.TopUpLink = value
 	case "ChatLink":
 		common.ChatLink = value
+	case "MjLink":
+		common.MjLink = value
+	case "NormalPrice":
+		common.NormalPrice, _ = strconv.ParseFloat(value, 64)
+	case "BasePrice":
+		common.BasePrice, _ = strconv.ParseFloat(value, 64)
+	case "StablePrice":
+		common.StablePrice, _ = strconv.ParseFloat(value, 64)
 	case "ChannelDisableThreshold":
 		common.ChannelDisableThreshold, _ = strconv.ParseFloat(value, 64)
 	case "QuotaPerUnit":

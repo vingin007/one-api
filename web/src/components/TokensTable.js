@@ -13,6 +13,7 @@ const COPY_OPTIONS = [
 ];
 
 const OPEN_LINK_OPTIONS = [
+  { key: 'mj', text: 'Midjourney', value: 'mj' },
   { key: 'ama', text: 'AMA 问天', value: 'ama' },
   { key: 'opencat', text: 'OpenCat', value: 'opencat' },
 ];
@@ -135,6 +136,7 @@ const TokensTable = () => {
     }
     let encodedServerAddress = encodeURIComponent(serverAddress);
     const chatLink = localStorage.getItem('chat_link');
+    const mjLink = localStorage.getItem('mj_link');
     let defaultUrl;
   
     if (chatLink) {
@@ -150,6 +152,9 @@ const TokensTable = () => {
   
       case 'opencat':
         url = `opencat://team/join?domain=${encodedServerAddress}&token=sk-${key}`;
+        break;
+      case 'mj':
+        url = mjLink +`?api_secret=sk-${key}`;
         break;
         
       default:

@@ -14,6 +14,7 @@ const OperationSetting = () => {
     GroupRatio: '',
     TopUpLink: '',
     ChatLink: '',
+    MjLink:'',
     QuotaPerUnit: 0,
     AutomaticDisableChannelEnabled: '',
     ChannelDisableThreshold: 0,
@@ -122,6 +123,9 @@ const OperationSetting = () => {
         if (originInputs['ChatLink'] !== inputs.ChatLink) {
           await updateOption('ChatLink', inputs.ChatLink);
         }
+        if (originInputs['MjLink'] !== inputs.MjLink) {
+          await updateOption('MjLink', inputs.MjLink);
+        }
         if (originInputs['QuotaPerUnit'] !== inputs.QuotaPerUnit) {
           await updateOption('QuotaPerUnit', inputs.QuotaPerUnit);
         }
@@ -168,6 +172,15 @@ const OperationSetting = () => {
               value={inputs.ChatLink}
               type='link'
               placeholder='例如 ChatGPT Next Web 的部署地址'
+            />
+            <Form.Input
+                label='Midjourney页面链接'
+                name='MjLink'
+                onChange={handleInputChange}
+                autoComplete='new-password'
+                value={inputs.MjLink}
+                type='link'
+                placeholder='Midjourney web 的部署地址'
             />
             <Form.Input
               label='单位美元额度'
