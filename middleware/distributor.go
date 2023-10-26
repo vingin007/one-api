@@ -48,10 +48,10 @@ func Distribute() func(c *gin.Context) {
 				}
 			} else if !strings.HasPrefix(c.Request.URL.Path, "/v1/audio") {
 				err = common.UnmarshalBodyReusable(c, &modelRequest)
-			}
-			if err != nil {
-				abortWithMessage(c, http.StatusBadRequest, "无效的请求")
-				return
+				if err != nil {
+					abortWithMessage(c, http.StatusBadRequest, "无效的请求")
+					return
+				}
 			}
 			if strings.HasPrefix(c.Request.URL.Path, "/v1/moderations") {
 				if modelRequest.Model == "" {
