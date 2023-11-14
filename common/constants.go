@@ -22,12 +22,9 @@ var QuotaPerUnit = 500 * 1000.0 // $0.002 / 1K tokens
 var DisplayInCurrencyEnabled = true
 var DisplayTokenStatEnabled = true
 
-var UsingSQLite = false
-
 // Any options with "Secret", "Token" in its key won't be return by GetOptions
 
 var SessionSecret = uuid.New().String()
-var SQLitePath = "one-api.db"
 
 var OptionMap map[string]string
 var OptionMapRWMutex sync.RWMutex
@@ -102,6 +99,8 @@ var BasePrice = 1.5
 
 var BatchUpdateEnabled = false
 var BatchUpdateInterval = GetOrDefault("BATCH_UPDATE_INTERVAL", 5)
+
+var RelayTimeout = GetOrDefault("RELAY_TIMEOUT", 0) // unit is second
 
 const (
 	RequestIdKey = "X-Oneapi-Request-Id"
